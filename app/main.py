@@ -13,6 +13,10 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static", html=True), name="static")
 
+@app.get("/")
+def read_root():
+  return {"Hello": "World"}
+
 @app.post("/process_csv/")
 async def process_csv(file: UploadFile = File(...)):
     if not file.filename.endswith('.csv'):
