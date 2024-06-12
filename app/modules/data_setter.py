@@ -1,9 +1,9 @@
 import datetime
 import polars as pl
 
-def set_base_data(lf: pl.LazyFrame, date: str):
-  df = (
-    lf
+def set_base_data(df: pl.DataFrame, date: str):
+  df_result = (
+    df
     .drop_nulls(subset='拠点名称')
     .with_columns(
       pl.col('カンパニー名称').str.replace('カンパニー', '').alias('カンパニー名称'),
@@ -33,9 +33,8 @@ def set_base_data(lf: pl.LazyFrame, date: str):
     )
     .sort(by=['カンパニー名称', '店舗名称','拠点名称',  '配送開始時間'])
     .filter(pl.col('日付') == date)
-    .collect()
   )
-  return df
+  return df_result
 
 def format_duration(duration):
   if isinstance(duration, datetime.timedelta):
