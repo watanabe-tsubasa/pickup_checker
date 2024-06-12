@@ -15,7 +15,7 @@ app.mount("/static", StaticFiles(directory="app/static", html=True), name="stati
 
 @app.get("/")
 def read_root():
-  return {"Hello": "World"}
+  return {"Hello": "World!"}
 
 @app.post("/process_csv/")
 async def process_csv(file: UploadFile = File(...)):
