@@ -2,9 +2,9 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import polars as pl
-import xlwings as xw
+import pandas as pd
 from app.modules.data_setter import set_base_data, set_flag, set_lag_flag, sorter
-from app.modules.data_getter import sheet_name_type, SheetCreator, create_sheet, start_late_finder
+from app.modules.data_getter import sheet_name_type, SheetCreator, start_late_finder
 from typing import List
 import os
 import tempfile
@@ -51,14 +51,13 @@ async def process_csv(file: UploadFile = File(...)):
 
         # Create a temporary output file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as output_file:
-            output_file_path = output_file.name
+          output_file_path = output_file.name
 
-        with xw.App(visible=False) as app:
-            wb = app.books.add()
-            create_sheet(start_late_finder(sorter(df_lag_flagged)), wb, '開始終了時間')
-            for flag in flag_list:
-                sc.create_sheet(wb, flag)
-            wb.save(output_file_path)
+        with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
+          start_late_finder(sorter(df_lag_flagged)).to_pandas().to_excel(writer, sheet_name='開始終了時間', index=False)
+          for flag in flag_list:
+            sheet_data = sc.get_sheet(flag)
+            sheet_data.to_pandas().to_excel(writer, sheet_name=flag, index=False)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

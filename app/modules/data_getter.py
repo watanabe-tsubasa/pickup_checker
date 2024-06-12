@@ -1,6 +1,5 @@
 from typing import Literal
 import polars as pl
-import xlwings as xw
 
 cap_output_cols = [
   'カンパニー名称',
@@ -45,9 +44,9 @@ def start_late_finder(df: pl.DataFrame):
   )
   return df_filtered
 
-def create_sheet(df: pl.DataFrame, wb: xw.Book, sheet_name: str):
-  ws = wb.sheets.add(sheet_name)
-  ws.range('A1').value = df.to_pandas().set_index('カンパニー名称', drop=True)
+# def create_sheet(df: pl.DataFrame, wb: xw.Book, sheet_name: str):
+#   ws = wb.sheets.add(sheet_name)
+#   ws.range('A1').value = df.to_pandas().set_index('カンパニー名称', drop=True)
   
 sheet_name_type = Literal['締時間差', 'CAP設定', '配送便間隙間']
 class SheetCreator:
@@ -72,7 +71,7 @@ class SheetCreator:
     else:
       return df_filtered.select(cap_output_cols)
   
-  def create_sheet(self, wb: xw.Book, sheet_name: sheet_name_type):
-    df = self.get_sheet(sheet_name)
-    ws = wb.sheets.add(sheet_name)
-    ws.range('A1').value = df.to_pandas().set_index('カンパニー名称', drop=True)
+  # def create_sheet(self, wb: xw.Book, sheet_name: sheet_name_type):
+  #   df = self.get_sheet(sheet_name)
+  #   ws = wb.sheets.add(sheet_name)
+  #   ws.range('A1').value = df.to_pandas().set_index('カンパニー名称', drop=True)
